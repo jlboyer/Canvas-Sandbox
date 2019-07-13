@@ -4,13 +4,14 @@ const game = {
   mouse: {x: 0,y: 0},
   delta: {x: 0,y: 0},
   canvas: {width: 1400, height: 800},
+  scale: 1,
 
 
   initialize() {
     game.animate()
     //ON WINDOW RESIZE EVENT CALL ANIMATION FUNCTION AGAIN----------
     window.addEventListener("resize", game.animate.bind(this))
-    //ON MOUSE MOVE UPDATE COORDINATES IN THE GAME OBJECT-----------
+    //ON MOUSE MOVE UPDATE COORDINATES IN GAME OBJECT-----------
     document.onmousemove = (evt) => {
       game.mouse.x = this.getMousePos(canvas, evt).x
       game.mouse.y = this.getMousePos(canvas, evt).y
@@ -18,12 +19,19 @@ const game = {
     //--------------------------------------------------------------
     
     window.addEventListener('wheel', (evt) => {
+      evt.preventDefault()
+      evt.stopPropagation();
+
       if (evt.ctrlKey) {
-        scale -= e.deltaY * 0.01;
+        game.scale -= evt.deltaY * 0.5 ;
       } else {
         game.mouse.x-= evt.deltaX * 2;
         game.mouse.y -= evt.deltaY * 2;
       }
+      game.clearCanvas()
+      game.animate.bind(this)
+    }, {
+      passive: false,
     });
     
   },
@@ -38,13 +46,15 @@ const game = {
     game.ctx.clearRect(0, 0, canvas.width, canvas.height)  
   },
   animate() {
-    //IN EVENT OF RESIZE 
+    //IN EVENT OF RESIZE ------
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
+    //--------
+    game.ctx.imageSmoothingEnabled = false;
     game.clearCanvas()
+    game.ctx.scale(game.scale,game.scale)
     game.ctx.beginPath();
-    game.ctx.arc(game.mouse.x, game.mouse.y, 20, 0, 2 * Math.PI);
+    game.ctx.arc(game.mouse.x, game.mouse.y, 20 , 0, 2 * Math.PI);
     game.ctx.fillStyle = "white";
     game.ctx.fill();
     //ANIMATION (RECURSIVE FUNCTION CALL) AT 60 FPS
