@@ -97,8 +97,13 @@ const circ = {
   colors: ["white", "black", "red"],
   currentColor: 0,
   previousColor: 0,
-  draw() {
+  orientation: false,
+  rotationAngle: 0,
+  draw(orientation = false) {
     this.updatePosition()
+    this.orientation = orientation
+    if (this.orientation === true) this.updateOrientation();
+
     //MOVE THE TRANSFORMATION ORIGIN TO THE CENTER OF THE OBJECT----
     game.ctx.translate(this.center.x , this.center.y)
     game.ctx.scale(game.scale , game.scale)
@@ -110,6 +115,10 @@ const circ = {
   },
   updatePosition(){
     this.center = {x: game.mouse.x + game.delta.x , y: game.mouse.y + game.delta.y}
+  },
+  updateOrientation(){
+    //the mousedown and hold event will update rotation angle 
+    //will need another method to draw vector after the circle is drawn from origin 
   }
 }
 game.initialize();
