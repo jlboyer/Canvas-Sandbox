@@ -8,8 +8,17 @@ const game = {
   isMousedown: false,
   scale: 1,
   circ: {},
+  //TIME WHEN THE GAME IS INITIALIZED
+  initTime: {date: {}, dateString: "", timeString: "", day: 0, hour: 0, minute: 0, second: 0, millisecond: 0},
+  //THE CURRENT TIME, THE DELTA BETWEEN THIS AND INIT WILL ALLOW FOR FPS CALC AND MOUSEDRAG EVENT
+  currentTime: {date: {}, dateString: "", timeString: "", day: 0, hour: 0, minute: 0, second: 0, millisecond: 0}, 
+  //TIMER @ 60 FPS , RESET: FRAME EVERY SECOND, SECONDS & MINS EVERY 60, HRS EVERY 24, DAYS...REALLY?
+  timer: {frame: 0, milliseconds: 0, seconds: 0, mins: 0, hrs: 0, days: 0},
   
   initialize() {
+    this.initTime.date = new Date()
+    this.setGameTime(this.initTime)
+
     this.circ = circ
     game.animate();
     //ON WINDOW RESIZE EVENT RE-CALL ANIMATION FUNCTION -------------
@@ -43,10 +52,12 @@ const game = {
       setTimeout( () => {
         this.isMousedown = true
         })
-      }, 2000);
+      }, 300);
     window.addEventListener("mouseup", () =>{
-      this.isMousedown = false
-    })
+      setTimeout( () => {
+        this.isMousedown = false
+        })
+      }, 600);
     //ON MOUSE WHEEL EVENT ZOOM CANVAS-------------------------------
     window.addEventListener(
       "wheel",
@@ -83,13 +94,35 @@ const game = {
     canvas.height = window.innerHeight;
     //--------------------------------------------------------------
     game.clearCanvas();
+    //UPDATE THE CURRENT GAME TIME----------------------------------
+    game.currentTime.date = new Date()
+    game.setGameTime(game.currentTime)
+
+    game.writeTime()
 
     game.circ.draw()
 
-    //ANIMATION (RECURSIVE FUNCTION CALL) AT 60 FPS
+    //ANIMATION (RECURSIVE FUNCTION CALL) AT APPROX. 60 FPS
     window.requestAnimationFrame(game.animate);
-  }
+  },
+  writeTime(){
+    game.ctx.font = '12px monospace';
+    game.ctx.fillStyle = 'white'
+    game.ctx.beginPath()
+    game.ctx.fillText(game.initTime.timeString, 10, 20);
+    game.ctx.fillText(game.currentTime.timeString, 10, 40);
+  },
+  setGameTime(gameDateObject) {
+    gameDateObject.dateString = gameDateObject.date.toDateString()
+    gameDateObject.day = gameDateObject.date.getDay()                  //RETURNS (0 - 6)
+    gameDateObject.hour = gameDateObject.date.getHours()               //RETURNS (0 - 23)
+    gameDateObject.minute = gameDateObject.date.getMinutes()           //RETURNS (0 - 59)
+    gameDateObject.second = gameDateObject.date.getSeconds()           //RETURNS (0 - 59)
+    gameDateObject.millisecond = gameDateObject.date.getMilliseconds() //RETURNS (0 - 999)
+    gameDateObject.timeString = `${gameDateObject.hour.toString(10).padStart(2,'0')}:${gameDateObject.minute.toString(10).padStart(2,'0')}:${gameDateObject.second.toString(10).padStart(2,'0')}:${gameDateObject.millisecond.toString(10).padStart(4,'0')}`
+    }    
 };
+
 
 const circ = {
   center: {x: 0 , y: 0},
