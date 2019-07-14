@@ -14,10 +14,13 @@ const game = {
   currentTime: {date: {}, dateString: "", timeString: "", day: 0, hour: 0, minute: 0, second: 0, millisecond: 0}, 
   //TIMER @ 60 FPS , RESET: FRAME EVERY SECOND, SECONDS & MINS EVERY 60, HRS EVERY 24, DAYS...REALLY?
   timer: {timeString: "", frame: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 },
-  
+  priorFrameTime: 0,
+  currentFrameTime: 0,
+  FPS: 0,
   initialize() {
     this.initTime.date = new Date()
     this.setGameTime(this.initTime)
+    this.currentFrameTime = this.initTime.date.getTime()
 
     this.circ = circ
     game.animate();
@@ -99,6 +102,9 @@ const game = {
     game.setGameTime(game.currentTime)
     game.timer.frame += 1  //UPDATE TIMER WILL RESET TO 0 AT 60
     game.updateTimer()
+    game.calcFPS()
+    //--------------------------------------------------------------
+
 
     game.writeTime()
 
@@ -114,6 +120,7 @@ const game = {
     game.ctx.fillText(game.initTime.timeString, 10, 20);
     game.ctx.fillText(game.currentTime.timeString, 10, 40);
     game.ctx.fillText(game.timer.timeString, 10, 60)
+    game.ctx.fillText(`FPS: ${game.FPS.toPrecision(2)}`, 10, 80)
     game.ctx.fillText
   },
   setGameTime(gameDateObject) {
@@ -128,8 +135,9 @@ const game = {
     updateTimer(){
       //RESET FRAMES AT 60
       if (game.timer.frame === 0) game.timer.frame = 0;
+
       let totalMilliseconds = game.currentTime.date.getTime() - game.initTime.date.getTime()
-      console.log(game.timer.seconds)
+
       game.timer.days = Math.floor(totalMilliseconds / (1000 * 60 * 60 * 24))
 
       game.timer.hours = Math.floor((totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24)) / (1000* 60 * 60))
@@ -141,7 +149,11 @@ const game = {
       game.timer.milliseconds = Math.floor(totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24) - game.timer.hours * (1000 * 60 * 60 * 24) - game.timer.minutes * (1000 * 60) - game.timer.seconds * 1000)
 
       game.timer.timeString = `${game.timer.days.toString(10)}:${game.timer.hours.toString(10).padStart(2,'0')}:${game.timer.minutes.toString(10).padStart(2,'0')}:${game.timer.seconds.toString(10).padStart(2,'0')}:${game.timer.milliseconds.toString(10).padStart(4,'0')}`
-      console.log(game.timer.timeString)
+    },
+    calcFPS(){
+      game.priorFrameTime = game.currentFrameTime
+      game.currentFrameTime = game.currentTime.date.getTime()
+      game.FPS = 1000 / (game.currentFrameTime - game.priorFrameTime) 
     }    
 };
 
