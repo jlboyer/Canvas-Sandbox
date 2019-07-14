@@ -13,7 +13,7 @@ const game = {
   //THE CURRENT TIME, THE DELTA BETWEEN THIS AND INIT WILL ALLOW FOR FPS CALC AND MOUSEDRAG EVENT
   currentTime: {date: {}, dateString: "", timeString: "", day: 0, hour: 0, minute: 0, second: 0, millisecond: 0}, 
   //TIMER @ 60 FPS , RESET: FRAME EVERY SECOND, SECONDS & MINS EVERY 60, HRS EVERY 24, DAYS...REALLY?
-  timer: {frame: 0, milliseconds: 0, seconds: 0, mins: 0, hrs: 0, days: 0},
+  timer: {timeString: "", frame: 0, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 },
   
   initialize() {
     this.initTime.date = new Date()
@@ -94,9 +94,11 @@ const game = {
     canvas.height = window.innerHeight;
     //--------------------------------------------------------------
     game.clearCanvas();
-    //UPDATE THE CURRENT GAME TIME----------------------------------
+    //UPDATE THE CURRENT GAME TIME AND TIMER------------------------
     game.currentTime.date = new Date()
     game.setGameTime(game.currentTime)
+    game.timer.frame += 1  //UPDATE TIMER WILL RESET TO 0 AT 60
+    game.updateTimer()
 
     game.writeTime()
 
@@ -111,6 +113,8 @@ const game = {
     game.ctx.beginPath()
     game.ctx.fillText(game.initTime.timeString, 10, 20);
     game.ctx.fillText(game.currentTime.timeString, 10, 40);
+    game.ctx.fillText(game.timer.timeString, 10, 60)
+    game.ctx.fillText
   },
   setGameTime(gameDateObject) {
     gameDateObject.dateString = gameDateObject.date.toDateString()
@@ -119,10 +123,29 @@ const game = {
     gameDateObject.minute = gameDateObject.date.getMinutes()           //RETURNS (0 - 59)
     gameDateObject.second = gameDateObject.date.getSeconds()           //RETURNS (0 - 59)
     gameDateObject.millisecond = gameDateObject.date.getMilliseconds() //RETURNS (0 - 999)
-    gameDateObject.timeString = `${gameDateObject.hour.toString(10).padStart(2,'0')}:${gameDateObject.minute.toString(10).padStart(2,'0')}:${gameDateObject.second.toString(10).padStart(2,'0')}:${gameDateObject.millisecond.toString(10).padStart(4,'0')}`
+    gameDateObject.timeString = `${gameDateObject.day.toString(10)}:${gameDateObject.hour.toString(10).padStart(2,'0')}:${gameDateObject.minute.toString(10).padStart(2,'0')}:${gameDateObject.second.toString(10).padStart(2,'0')}:${gameDateObject.millisecond.toString(10).padStart(4,'0')}`
+    },
+    updateTimer(){
+      //RESET FRAMES AT 60
+      if (game.timer.frame === 0) game.timer.frame = 0;
+      let totalMilliseconds = game.currentTime.date.getTime() - game.initTime.date.getTime()
+      console.log(game.timer.seconds)
+      game.timer.days = Math.floor(totalMilliseconds / (1000 * 60 * 60 * 24))
+
+      game.timer.hours = Math.floor((totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24)) / (1000* 60 * 60))
+
+      game.timer.minutes = Math.floor((totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24) - game.timer.hours * (1000 * 60 * 60 * 24))/(1000 * 60))
+
+      game.timer.seconds = Math.floor((totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24) - game.timer.hours * (1000 * 60 * 60 * 24) - game.timer.minutes * (1000 * 60))/(1000))
+
+      game.timer.milliseconds = Math.floor(totalMilliseconds - game.timer.days * (1000 * 60 * 60 * 24) - game.timer.hours * (1000 * 60 * 60 * 24) - game.timer.minutes * (1000 * 60) - game.timer.seconds * 1000)
+
+      game.timer.timeString = `${game.timer.days.toString(10)}:${game.timer.hours.toString(10).padStart(2,'0')}:${game.timer.minutes.toString(10).padStart(2,'0')}:${game.timer.seconds.toString(10).padStart(2,'0')}:${game.timer.milliseconds.toString(10).padStart(4,'0')}`
+      console.log(game.timer.timeString)
     }    
 };
 
+// timer: {frame: 0, milliseconds: 0, seconds: 0, mins: 0, hrs: 0, days: 0},
 
 const circ = {
   center: {x: 0 , y: 0},
