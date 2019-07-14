@@ -1,10 +1,10 @@
 const game = {
   canvas: document.getElementById("canvas"),
   ctx: this.canvas.getContext("2d"),
-  canvas: { width: 1400, height: 800 },
   mouse: { x: 0, y: 0 },
   delta: { x: 0, y: 0 },
   clicked: 0,
+  isMousedown: false,
   mousedownTime: 0,
   scale: 1,
   circ: {},
@@ -46,14 +46,27 @@ const game = {
             this.clicked = 0
           }
         }, 300);
-      }
+      } 
     });
     document.addEventListener("dblclick", () => {
       this.circ.currentColor = 2;
     });
     window.addEventListener("mousedown", () =>{
       this.mousedownTime = this.currentTime.date.getTime()
+      this.isMousedown = true
+      this.canvas.requestPointerLock()
     });
+    document.addEventListener('pointerlockchange', () => {
+      if (document.pointerLockElement === canvas) {
+        console.log('pointer locked')
+      } else {
+        console.log('pointer unlocked')
+      }
+    }, false);
+    window.addEventListener("mouseup", () =>{
+      this.isMousedown = false
+      document.exitPointerLock()
+    })
     //ON MOUSE WHEEL EVENT ZOOM CANVAS-------------------------------
     window.addEventListener(
       "wheel",
@@ -149,8 +162,6 @@ const game = {
       game.FPS = 1000 / (game.currentFrameTime - game.priorFrameTime) 
     }    
 };
-
-// timer: {frame: 0, milliseconds: 0, seconds: 0, mins: 0, hrs: 0, days: 0},
 
 const circ = {
   center: {x: 0 , y: 0},
