@@ -5,7 +5,7 @@ const game = {
   mouse: { x: 0, y: 0 },
   delta: { x: 0, y: 0 },
   clicked: 0,
-  isMousedown: false,
+  mousedownTime: 0,
   scale: 1,
   circ: {},
   //TIME WHEN THE GAME IS INITIALIZED
@@ -35,9 +35,9 @@ const game = {
       }
     };
     // ---------------------------------------------------------------
-    //ON MOUSE CLICK AND DOUBLE CLICK EVENTS--------------------------
+    //ON MOUSE CLICK, DOUBLE CLICK AND HOLD EVENTS--------------------
     window.addEventListener("click", () => {
-      if (this.clicked === 0 && this.isMousedown === false) {
+      if (this.clicked === 0 && this.currentTime.date.getTime() - this.mousedownTime < 300) {
         this.clicked = 1
         this.circ.previousColor = this.circ.currentColor
         this.circ.currentColor = Math.abs(this.circ.currentColor - 1)
@@ -52,15 +52,8 @@ const game = {
       this.circ.currentColor = 2;
     });
     window.addEventListener("mousedown", () =>{
-      setTimeout( () => {
-        this.isMousedown = true
-        })
-      }, 300);
-    window.addEventListener("mouseup", () =>{
-      setTimeout( () => {
-        this.isMousedown = false
-        })
-      }, 600);
+      this.mousedownTime = this.currentTime.date.getTime()
+    });
     //ON MOUSE WHEEL EVENT ZOOM CANVAS-------------------------------
     window.addEventListener(
       "wheel",
