@@ -54,7 +54,11 @@ const game = {
     window.addEventListener("mousedown", () =>{
       this.mousedownTime = this.currentTime.date.getTime()
       this.isMousedown = true
-      this.canvas.requestPointerLock()
+      setTimeout( () => {
+        if (this.isMousedown === true){
+          this.canvas.requestPointerLock()
+        }
+      }, 500);
     });
     document.addEventListener('pointerlockchange', () => {
       if (document.pointerLockElement === canvas) {
