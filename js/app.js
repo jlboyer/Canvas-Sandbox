@@ -7,9 +7,6 @@ const game = {
   clicked: 0,
   isMousedown: false,
   scale: 1,
-  colors: ["white", "black", "red"],
-  currentColor: 0,
-  previousColor: 0,
   circ: {},
   
   initialize() {
@@ -30,8 +27,8 @@ const game = {
     window.addEventListener("click", () => {
       if (this.clicked === 0 && this.isMousedown === false) {
         this.clicked = 1
-        this.previousColor = this.currentColor
-        this.currentColor = Math.abs(this.currentColor - 1)
+        this.circ.previousColor = this.circ.currentColor
+        this.circ.currentColor = Math.abs(this.circ.currentColor - 1)
         setTimeout( () => {
           if (this.clicked = 1){
             this.clicked = 0
@@ -40,7 +37,7 @@ const game = {
       }
     });
     document.addEventListener("dblclick", () => {
-      this.currentColor = 2;
+      this.circ.currentColor = 2;
     });
     window.addEventListener("mousedown", () =>{
       setTimeout( () => {
@@ -97,6 +94,9 @@ const game = {
 const circ = {
   center: {x: 0 , y: 0},
   radius: 20,
+  colors: ["white", "black", "red"],
+  currentColor: 0,
+  previousColor: 0,
   draw() {
     this.updatePosition()
     //MOVE THE TRANSFORMATION ORIGIN TO THE CENTER OF THE OBJECT----
@@ -105,7 +105,7 @@ const circ = {
     game.ctx.beginPath();
     game.ctx.arc(0, 0, this.radius , 0, 2 * Math.PI);
 
-    game.ctx.fillStyle = game.colors[game.currentColor];
+    game.ctx.fillStyle = this.colors[this.currentColor];
     game.ctx.fill();
   },
   updatePosition(){
